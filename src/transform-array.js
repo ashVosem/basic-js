@@ -1,26 +1,35 @@
 module.exports = function transform(arr) {
+    if (!Array.isArray(arr)) throw new Error()
+
     const flags = {
-        1 : '--double-next',
-        2 : '--double-prev',
+        1 : '--double-prev',
+        2 : '--double-next',
         3 : '--discard-prev',
         4 : '--discard-next'
     }
+    let answer = []
 
-    arr.flat(1).forEach((elem, index, arr) => {
-        if(elem === flags[4]) {
-            arr.splice(index, 2)
+    for (let i = 0; i < arr.length; i++) {
+        switch (arr[i]) {
+            case flags[4]:
+                i++
+                break
+            case flags[3]:
+                answer.pop()
+                break
+            case flags[2]:
+                if(i + 1 < arr.length) {
+                    answer.push(arr[i + 1])
+                }
+                break
+            case flags[1]:
+                if (i !== 0) {
+                    answer.push(arr[i - 1])
+                }
+                break
+            default:
+                answer.push(arr[i])
         }
-        if(elem === flags[3]) {
-            arr.splice(index - 1 , 2)
-        }
-        if(elem === flags[2]) {
-            arr.splice(index, 1, arr[index - 1])
-        }  
-        if(elem === flags[1]) {
-            arr.splice(index, 1, arr[index + 1])
-        }
-        
-    })
-
-    return arr
+    }
+    return answer
 };
